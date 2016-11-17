@@ -10,54 +10,61 @@ import {
   StyleSheet,
   Text,
   View,
+  ListView,
   TouchableHighlight
 } from 'react-native';
 
-//import {GiftedListView} from 'react-native-gifted-listview';
-var GiftedListView = require('react-native-gifted-listview');
-export default class demo extends Component {
-  _onFetch(page = 1, callback, options) {
-    setTimeout(() => {
-      var rows = ['row '+((page - 1) * 3 + 1), 'row '+((page - 1) * 3 + 2), 'row '+((page - 1) * 3 + 3)];
-      if (page === 3) {
-          callback(rows, {
-                      allLoaded: true, // the end of the list is reached
-                    });
-        } else {
-                  callback(rows);
-                }
-    }, 1000); // simulating network fetching
+class NewsItem extends Component{
+  constructor(props){
+    super(props);
   }
-  _renderRowView(rowData) {
+  render(){
     return (
-      <TouchableHighlight
-        style={styles.row}
-        underlayColor='#c8c7cc'
-        onPress={() => this._onPress(rowData)}
-      >
-          <Text>{rowData}</Text>
-        </TouchableHighlight>
-      );
+      <View style={styles.newsItem}>
+        <Text>{this.props.news.title}</Text>
+      </View>
+    );
+  }
+}
+
+export default class demo extends Component {
+  constructor(props){
+    super(props);
+    this.state={num:0};
+    this._randerRow=this._randerRow.bind(this);
+    this._onEndReached=this._onEndReached.bind(this);
+    this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    this.datas=[{title:'hj'},{title:'hm'},{title:'lq'}];
+    this.dsData=this.ds.cloneWithRows(this.datas);
+    /*
+    setInterval(()=>{
+      this.datas.push({title:'hj'+this.state.num});
+      this.dsData=this.ds.cloneWithRows(this.datas);
+      this.setState((previousState, currentProps)=>{num:previousState.num++});
+    },1000);
+    */
+    //this.dsData=this.ds.cloneWithRows([{title:'hj'},{title:'hm'},{title:'lq'}]);
+  }
+  _randerRow(rowData){
+    return (
+      <NewsItem style={{flex:1}} news={rowData}/>
+    ); 
+  }
+  _onEndReached(){
+    console.log('_onEndReached');
+    this.datas.push({title:'hj'+this.state.num});
+    this.dsData=this.ds.cloneWithRows(this.datas);
+    this.setState((previousState, currentProps)=>{num:previousState.num++});
   }
   render() {
+    
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!hj laikk
-        </Text>
-        <GiftedListView
-          rowView={this._renderRowView}
-          onFetch={this._onFetch}
-          firstLoader={true} // display a loader for the first fetching
-          pagination={true} // enable infinite scrolling using touch to load more
-          refreshable={true} // enable pull-to-refresh for iOS and touch-to-refresh for Android
-          withSections={false} // enable sections
-          customStyles={{
-            paginationView: {
-                backgroundColor: '#eee',
-              },
-          }}
-          refreshableTintColor="blue"
+        <ListView
+          dataSource={this.dsData}
+          renderRow={this._randerRow}
+          enableEmptySections = {true} 
+          onEndReached={this._onEndReached}
         />
       </View>
     );
@@ -71,15 +78,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  newsItem: {
+    flex:1,
+    height:80,
   },
 });
 
