@@ -35,7 +35,7 @@ export default class demo extends Component {
   constructor(props){
     super(props);
     this.state={num:0};
-    this.maxId=20;
+    this.maxId=2;
     this._randerRow=this._randerRow.bind(this);
     this._onEndReached=this._onEndReached.bind(this);
     this._renderSeparator=this._renderSeparator.bind(this);
@@ -46,59 +46,52 @@ export default class demo extends Component {
     this.dsData=this.ds.cloneWithRows(this.datas);
 
     
-    let checkId='T1467284926140';
-    let endId=this.maxId+20;
-    this._pullNews(checkId,this.maxId,endId);
-    this.maxId=endId;
+    let newsType='yaowen';
+    this._pullNews(newsType,this.maxId);
+    this.maxId++;
   }
 
-  _pullNews(checkId,begin,end){
-    console.log(checkId,begin,end);
+  _pullNews(newsType,page){
     let option={
-      method: 'GEt',
+      method: 'GET',
       headers:{
-        /*
         'Content-Type': 'application/json',
         'User-Agent':'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.23 Mobile Safari/537.36',
         'Host':'c.m.163.com',
-        */
-        'User-Agent': 'NewsApp/17.1 Android/6.0.1 (Xiaomi/MI MAX)',
-        'User-N': 'VnE1Iqw3/SoXRqhFJu9cFg==',
-        'User-D': '2HpzXTf7GAKgNztWYqxrlErTnbMVjIA75hdxg2w1lA5jYmSfaSDFTbL/Dy6YjUaZ',
-        'User-C': '5aS05p2h',
-        'Host': 'c.3g.163.com',
         'Connection': 'Keep-Alive',
         'Accept-Encoding': 'gzip',
       }
     };
     //http://temp.163.com/special/00804KVA/cm_shehui_03.js?callback=data_callback
-    let myresp=fetch('http://c.m.163.com/nc/article/list/'+checkId+'/'+begin+'-'+end+'.html')
+    const url = 'http://temp.163.com/special/00804KVA/cm_'+newsType+'_0'+page+'.js?callback=data_callback';
+    let myresp=fetch(url)
       .then((resp)=>{
-        console.log(resp);
-        return resp.json();
+        return resp.text();
       })
-      .then((respJson)=>{
-        //console.log(respJson);
+      .then((respText)=>{
+        respText.replace('data_callback(','');
+        respText=respText.replace(/\)$/,'');
+        console.log(respText);
+        respText='[{"title":"hj"}]';
+        respJson=JSON.parse(respText);
+        console.log('respJson:',respJson);
         return respJson;
       })
       .catch((error,r)=>{
         console.log(error,r);
         console.log(arguments);
-        this.maxId-=20;
+        this.maxId--;
       });
     myresp.then((respJson)=>{
       console.log(this.datas);
 
       if(respJson){
-        console.log('respJson:',respJson);
-        respNews=respJson[checkId];
-        console.log('respNews:',respNews);
-        respNews.map((data)=>{
+        respJson.map((data)=>{
           item={
             title:data.title,
-            imgsrc:data.imgsrc,
-            source:data.source,
-            replyCount:data.replyCount,
+            imgsrc:data.imgurl,
+            source:'',
+            replyCount:data.tienum,
           };
           this.datas.push(item);
         });
@@ -109,7 +102,7 @@ export default class demo extends Component {
       })
       .catch((error)=>{
         console.log('handle back error:',error);
-        this.maxId-=20;
+        this.maxId--;
       });
     console.log('myresp:',myresp);
   
@@ -182,10 +175,9 @@ export default class demo extends Component {
     ); 
   }
   _onEndReached(){
-    let checkId='T1467284926140';
-    let endId=this.maxId+20;
-    this._pullNews(checkId,this.maxId,endId);
-    this.maxId=endId;
+    let newsType='yaowen';
+    this._pullNews(newsType,this.maxId);
+    this.maxId++;
   }
   _renderSeparator(sectionID: number, rowID: number, adjacentRowHighlighted: bool){
     //console.log('_renderSeparator',sectionID,rowID,adjacentRowHighlighted);
