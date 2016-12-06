@@ -5,6 +5,9 @@
  */
 
 import React, { Component } from 'react';
+//import SocketIO from 'react-native-socketio';
+let SocketIO = require('react-native-socketio');
+
 import {
   AppRegistry,
   StyleSheet,
@@ -40,18 +43,39 @@ export default class demo extends Component {
     this._onEndReached=this._onEndReached.bind(this);
     this._renderSeparator=this._renderSeparator.bind(this);
     this._pullNews=this._pullNews.bind(this);
+    this.itemPress=this.itemPress.bind(this);
+    this.itemLongPress=this.itemLongPress.bind(this);
 
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.datas=[];
     this.dsData=this.ds.cloneWithRows(this.datas);
 
-    
     let newsType='yaowen';
     this._pullNews(newsType,this.maxId);
     this.maxId++;
+
+    let socket = new SocketIO('http://106.75.146.152:5005',{'log':true});
+    socket.connect();
+    console.log('to connect');
+    socket.on('connect',()=>{console.log('connect')});
+    socket.on('error',(err)=>{console.log('err',err)});
+    socket.emit('myTest',{'pwd':'19910725'});
+    //socket.emit('myTest','client test');
+    socket.on('myTest',function(data){
+      console.log('data:',arguments);
+    });
   }
 
+  itemPress(){
+    console.log('itemPress');
+  }
+  itemLongPress(){
+    console.log('itemLongPress');
+  }
+  
+
   _pullNews(newsType,page){
+    
     let option={
       method: 'GET',
       headers:{
@@ -71,10 +95,10 @@ export default class demo extends Component {
       .then((respText)=>{
         respText.replace('data_callback(','');
         respText=respText.replace(/\)$/,'');
-        console.log(respText);
-        respText='[{"title":"hj"}]';
+        //console.log(respText);
+        respText='[{"title":"hj"},{"title":"hj1"},{"title":"hj2"},{"title":"hj3"},{"title":"hj4"},{"title":"hj5"}]';
         respJson=JSON.parse(respText);
-        console.log('respJson:',respJson);
+        //console.log('respJson:',respJson);
         return respJson;
       })
       .catch((error,r)=>{
@@ -83,7 +107,7 @@ export default class demo extends Component {
         this.maxId--;
       });
     myresp.then((respJson)=>{
-      console.log(this.datas);
+      //console.log(this.datas);
 
       if(respJson){
         respJson.map((data)=>{
@@ -95,7 +119,7 @@ export default class demo extends Component {
           };
           this.datas.push(item);
         });
-        console.log(this.datas);
+        //console.log(this.datas);
         this.dsData=this.ds.cloneWithRows(this.datas);
         this.setState((previousState, currentProps)=>{num:previousState.num++});
       }
@@ -104,7 +128,7 @@ export default class demo extends Component {
         console.log('handle back error:',error);
         this.maxId--;
       });
-    console.log('myresp:',myresp);
+    //console.log('myresp:',myresp);
   
   }
 
@@ -131,9 +155,21 @@ export default class demo extends Component {
     }
   }
   /*/
+  onPressEvent(e){
+    console.log('onPressEvent:',e);
+  }
   _randerRow(news){
     return (
-      <TouchableHighlight underlayColor="red">
+      <TouchableHighlight 
+        underlayColor="red"
+        onPressIn={()=>this.onPressEvent('onPressIn')}
+        onPressOut={()=>this.onPressEvent('onPressOut')}
+        onPress={()=>this.onPressEvent('onPress')}
+        onLongPress={()=>this.onPressEvent('onLongPress')}
+        delayPressIn={5}
+        delayLongPress={2000}
+        delayPressOut={5}
+        >
         <View 
           key={news.key}
           style={styles.newsItem}>
@@ -175,6 +211,7 @@ export default class demo extends Component {
     ); 
   }
   _onEndReached(){
+    console.log('_onEndReached:',arguments);
     let newsType='yaowen';
     this._pullNews(newsType,this.maxId);
     this.maxId++;
@@ -191,6 +228,20 @@ export default class demo extends Component {
       />      
     );  
   }
+  renderHeader(){
+    return (
+      <View>
+        <Text>Header</Text>
+      </View>
+    );
+  }
+  renderFooter(){
+    return (
+      <View>
+        <Text>Footer</Text>
+      </View>
+    );
+  }
   render() {
     
     return (
@@ -201,7 +252,10 @@ export default class demo extends Component {
           renderRow={this._randerRow}
           enableEmptySections = {true} 
           onEndReached={this._onEndReached}
+          onEndReachedThreshold={80}
           renderSeparator={this._renderSeparator}
+          renderFooter={this.renderFooter}
+          renderHeader={this.renderHeader}
         />
         <View style={{height:200,backgroundColor:'#0D87FF'}}>
         </View>
