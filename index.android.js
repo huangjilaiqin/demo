@@ -65,10 +65,6 @@ export default class demo extends Component {
       let data=args[0];
       let recoms=data['recoms'];
       let updown=data['updown'];
-      let a=[1,3,5];
-      let b=[7,8,9];
-      let c=[...a,...b];
-      console.log(c);
       
       if(updown==1)
         for(let r of recoms)
@@ -80,8 +76,6 @@ export default class demo extends Component {
       console.log(this.datas);
       this.dsData=this.ds.cloneWithRows(this.datas);
       this.setState((previousState, currentProps)=>{num:previousState.num++});
-      /*
-      */
     });
     this.initData();
   }
@@ -139,6 +133,19 @@ export default class demo extends Component {
   onPressEvent(e){
     console.log('onPressEvent:',e);
   }
+  //统计数据
+  rendCount(recent,recentAll){
+    let infos=[];
+    recentAll.map((d,i)=>{
+      let all=recentAll[i];
+      if(i<recent.length)
+        infos.push({'recent':'','type':all['type'],'all':all['result']});
+      else
+        infos.push({'recent':recent[i],'type':all['type'],'all':all['result']});
+    });
+    console.log(infos);
+    return (infos.map(d=>{<Text>{d['recent']} {d['type']}:{d['all']}</Text>}));
+  }
   _randerRow(recom){
     return (
       <TouchableHighlight 
@@ -155,39 +162,27 @@ export default class demo extends Component {
           key={recom.id}
           style={styles.recomItem}>
           <View>
+            <Text>nickname</Text>
             <Text>{recom.simpleleague}</Text>
-            <Text>{recom.vsdate}</Text>
             <Text>{recom.homesxname} vs {recom.awaysxname}</Text>
+            <Text>{recom.recommend}</Text>
+            <Text>{moment(recom.vsdate).format('DD HH:mm')}</Text>
+            <Text>{moment(recom.createtime).format('DD HH:mm')}</Text>
+            <View>
+            <Text>test:</Text>
+            {
+            this.rendCount(recom.recent,recom.recentAll)
+            }
+            </View>
+            <Text>price:{recom.price}</Text>
+            <Text>{recom.buynum}</Text>
           </View>
           <View 
             style={{flex:1,justifyContent:'space-between'}}>
-            <Text 
-              numberOfLines={2}
-              ellipsizeMode='tail'
-              style={{
-                fontSize:16,
-                color:'black',
-              }}>{recom.title}</Text>
-            <View 
-              style={{
-                flex:1,
-                flexDirection:'row',
-                justifyContent:'space-between',
-                alignItems:'flex-end',  //让子节点在cross方向上与底部对齐
-              }}>
-              <Text
-                style={{
-                  fontSize:14,
-                  color:'grey',
-                }}
-                >{recom.source}</Text>
-              <Text
-                style={{
-                  fontSize:14,
-                  color:'grey',
-                }}
-                >{recom.replyCount}热度</Text>
-            </View>
+            <Text>{recom.winper}%</Text>
+            <Text>{recom.winmoney}</Text>
+            <Text>{recom.winmoneyper}%</Text>
+            
           </View>
         </View>
       </TouchableHighlight>
