@@ -5,10 +5,6 @@
  */
 
 import React, { Component } from 'react';
-import moment from 'moment';
-//import SocketIO from 'react-native-socketio';
-let SocketIO = require('react-native-socketio');
-
 import {
   AppRegistry,
   StyleSheet,
@@ -16,8 +12,19 @@ import {
   View,
   Image, 
   ListView,
-  TouchableHighlight
+  TouchableHighlight,
+  Clipboard,
+  Vibration,
+  RefreshControl,
+  PixelRatio, 
+  Dimensions,
 } from 'react-native';
+
+import moment from 'moment';
+import SocketIO from 'react-native-socketio';
+import {renderListEmptyView} from './common/ViewUtil'
+
+
 
 class NewsItem extends Component{
   constructor(props){
@@ -38,16 +45,23 @@ class NewsItem extends Component{
 export default class demo extends Component {
   constructor(props){
     super(props);
-    this.state={num:0};
+    this.state={num:0,loading:true};
+    this.type2Name={
+      0:'串关',
+      1:'胜平负',
+      2:'亚盘',
+      3:'大小球',
+      4:'让球',
+    };
     this._randerRow=this._randerRow.bind(this);
     this._onEndReached=this._onEndReached.bind(this);
     this._renderSeparator=this._renderSeparator.bind(this);
     //this._pullNews=this._pullNews.bind(this);
     this.itemPress=this.itemPress.bind(this);
     this.itemLongPress=this.itemLongPress.bind(this);
-    this.initData=this.initData.bind(this);
-    this.pullUp=this.pullUp.bind(this);
-    this.pullDonw=this.pullDonw.bind(this);
+    this.pullDatas=this.pullDatas.bind(this);
+    this.initDatas=this.initDatas.bind(this);
+    this.onRefresh=this.onRefresh.bind(this);
 
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.datas=[];
@@ -61,128 +75,98 @@ export default class demo extends Component {
     this.socket.on('connect',()=>{console.log('connect')});
     this.socket.on('error',(err)=>{console.log('err',err)});
     this.socket.on('myTest',(args)=>{
-      console.log('data:',args);
-      let data=args[0];
-      let recoms=data['recoms'];
-      let updown=data['updown'];
-      
-      if(updown==1)
-        for(let r of recoms)
-          this.datas.unshift(r);
-      else
-        for(let r of recoms)
-          this.datas.push(r);
-
-      console.log(this.datas);
+      let recoms=args[0];
+      console.log('recoms:',recoms);
+      //todo
+      this.datas=recoms;
       this.dsData=this.ds.cloneWithRows(this.datas);
-      this.setState((previousState, currentProps)=>{num:previousState.num++});
+      //this.setState((previousState, currentProps)=>{num:previousState.num++,net:1});
+      this.setState({num:1,loading:false});
     });
-    this.initData();
+    this.initDatas();
+    this.getMoviesFromApi();
+    console.log('get',PixelRatio.get());
+    console.log('Dimensions',Dimensions.get('window'));
+    console.log('getFontScale',PixelRatio.getFontScale());
+    console.log('getPixelSizeForLayoutSize',PixelRatio.getPixelSizeForLayoutSize(196));
   }
 
   itemPress(){
     console.log('itemPress');
   }
-  itemLongPress(){
+  itemLongPress(recom){
     console.log('itemLongPress');
+    Clipboard.setString(recom.explains)
+    Vibration.vibrate(5);
+    //var content = Clipboard.getString();
   }
 
-  initData(){
-    this.socket.emit('myTest',{id:0,updown:-1});
+  initDatas(){
+    this.socket.emit('myTest',{});
   }
 
-  pullDonw(){
-    let id=0;
-    if(datas.length>0)
-      id=this.datas[0]['id'];
-    this.socket.emit('myTest',{id,updown:1});
-  }
-  
-  pullUp(){
-    let id=0;
-    if(datas.length>0)
-      id=this.datas[this.datas.length]['id'];
-    this.socket.emit('myTest',{id,updown:-1});
+  pullDatas(){
+    this.setState({loading:true});
+    this.socket.emit('myTest',{});
   }
 
-    
-
-  /*
-  function getMoviesFromApiAsync() {
-    return fetch('https://facebook.github.io/react-native/movies.json')
-        .then((response) => response.json())
-        .then((responseJson) => {
-        return responseJson.movies;
-      })
-      .catch((error) => {
-        console.error(error);
-    });
-  }
-  //*/
-  /*
-  async function getMoviesFromApi() {
+  //*
+  async getMoviesFromApi() {
     try {
+      console.log('getMoviesFromApi begin');
       let response = await fetch('https://facebook.github.io/react-native/movies.json');
+      console.log('getMoviesFromApi back');
       let responseJson = await response.json();
+      console.log('getMoviesFromApi ok',responseJson);
       return responseJson.movies;
     } catch(error) {
       console.error(error);
     }
   }
-  /*/
+  //*/
   onPressEvent(e){
     console.log('onPressEvent:',e);
   }
-  //统计数据
-  rendCount(recent,recentAll){
-    let infos=[];
-    recentAll.map((d,i)=>{
-      let all=recentAll[i];
-      if(i<recent.length)
-        infos.push({'recent':'','type':all['type'],'all':all['result']});
-      else
-        infos.push({'recent':recent[i],'type':all['type'],'all':all['result']});
-    });
-    console.log(infos);
-    return (infos.map(d=>{<Text>{d['recent']} {d['type']}:{d['all']}</Text>}));
-  }
   _randerRow(recom){
+    console.log('recom',recom);
     return (
       <TouchableHighlight 
-        underlayColor="red"
+        underlayColor="white"
         onPressIn={()=>this.onPressEvent('onPressIn')}
         onPressOut={()=>this.onPressEvent('onPressOut')}
-        onPress={()=>this.onPressEvent('onPress')}
-        onLongPress={()=>this.onPressEvent('onLongPress')}
-        delayPressIn={5}
-        delayLongPress={2000}
-        delayPressOut={5}
+        onPress={()=>this.itemPress(recom)}
+        onLongPress={()=>this.itemLongPress(recom)}
+        delayLongPress={1000}
         >
         <View 
           key={recom.id}
           style={styles.recomItem}>
           <View>
-            <Text>nickname</Text>
-            <Text>{recom.simpleleague}</Text>
-            <Text>{recom.homesxname} vs {recom.awaysxname}</Text>
-            <Text>{recom.recommend}</Text>
-            <Text>{moment(recom.vsdate).format('DD HH:mm')}</Text>
-            <Text>{moment(recom.createtime).format('DD HH:mm')}</Text>
-            <View>
-            <Text>test:</Text>
-            {
-            this.rendCount(recom.recent,recom.recentAll)
-            }
+            <View style={{flex:1,height:20,flexDirection:'row'}}>
+              <Text>{recom.nickname}  </Text>
+              <Text>{recom.simpleleague}  </Text>
+              <Text>{recom.homesxname} vs {recom.awaysxname}  </Text>
+              <Text>{moment(recom.vsdate).format('DD HH:mm')}  </Text>
             </View>
-            <Text>price:{recom.price}</Text>
-            <Text>{recom.buynum}</Text>
-          </View>
-          <View 
-            style={{flex:1,justifyContent:'space-between'}}>
-            <Text>{recom.winper}%</Text>
-            <Text>{recom.winmoney}</Text>
-            <Text>{recom.winmoneyper}%</Text>
-            
+
+            <View style={{flex:1,height:20,flexDirection:'row'}}>
+              <Text>{this.type2Name[recom.type]}  </Text>
+              <Text>{recom.recommend}  </Text>
+              <Text>{moment(recom.createtime).format('DD HH:mm')}  </Text>
+            </View>
+
+            <View style={{flex:1,height:30,flexDirection:'row'}}>
+              <Text>￥{recom.price} {recom.buynum}次    </Text>
+              <Text>win:{recom.winper}% {recom.winmoneyper}% {recom.winmoney}</Text>
+            </View>
+
+            <View>
+              <Text>{recom.recent.map((d,id)=><Text key={id}>{d.result}</Text>)}</Text>
+              <Text>{recom.recentAll.map((d,id)=><Text key={id}>{d.result}</Text>)}</Text>
+              <Text>{recom.recentAll.map((d,id)=><Text key={id}>{d.type}</Text>)}</Text>
+            </View>
+
+            <Text>{recom.explains}</Text>
           </View>
         </View>
       </TouchableHighlight>
@@ -190,7 +174,6 @@ export default class demo extends Component {
   }
   _onEndReached(){
     console.log('_onEndReached:',arguments);
-    let recomType='yaowen';
     //this._pullNews(recomType,this.maxId);
     this.maxId++;
   }
@@ -220,25 +203,38 @@ export default class demo extends Component {
       </View>
     );
   }
+  onRefresh(){
+    this.pullDatas();
+  }
+
   render() {
-    
-    return (
-      <View style={styles.container}>
-        <ListView
-          style={styles.listStyle}
-          dataSource={this.dsData}
-          renderRow={this._randerRow}
-          enableEmptySections = {true} 
-          onEndReached={this._onEndReached}
-          onEndReachedThreshold={80}
-          renderSeparator={this._renderSeparator}
-          renderFooter={this.renderFooter}
-          renderHeader={this.renderHeader}
-        />
-        <View style={{height:200,backgroundColor:'#0D87FF'}}>
+    console.log('render:',this.state,size);
+    let size=this.dsData.getRowCount();
+    if(!this.state.loading && size==0){
+      return renderListEmptyView('暂无数据',this.onRefresh);
+    }else{
+      return (
+        <View style={styles.container}>
+          <ListView
+            style={styles.listStyle}
+            dataSource={this.dsData}
+            renderRow={this._randerRow}
+            enableEmptySections = {true} 
+            refreshControl={
+              <RefreshControl
+                onRefresh={this.onRefresh}
+                refreshing={this.state.loading}
+                />
+            }
+            onEndReached={this._onEndReached}
+            onEndReachedThreshold={80}
+            renderSeparator={this._renderSeparator}
+            //renderFooter={this.renderFooter}
+            //renderHeader={this.renderHeader}
+          />
         </View>
-      </View>
-    );
+      );
+    }
   }
 }
 
@@ -251,7 +247,7 @@ const styles = StyleSheet.create({
   },
   recomItem: {
     flex:1,
-    height:200,
+    height:300,
     padding:8,
   },
   itemSeprator: {
@@ -259,5 +255,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'grey',
   },
 });
+
 
 AppRegistry.registerComponent('demo', () => demo);
