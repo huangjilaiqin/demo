@@ -84,7 +84,6 @@ export default class demo extends Component {
       this.setState({num:1,loading:false});
     });
     this.initDatas();
-    this.getMoviesFromApi();
     console.log('get',PixelRatio.get());
     console.log('Dimensions',Dimensions.get('window'));
     console.log('getFontScale',PixelRatio.getFontScale());
