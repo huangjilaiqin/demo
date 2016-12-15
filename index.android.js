@@ -24,6 +24,7 @@ import {
 import moment from 'moment';
 import SocketIO from 'react-native-socketio';
 import {renderListEmptyView} from './common/ViewUtil';
+import Main from './Main';
 import MyViewPager from './MyViewPager';
 import Recommends from './Recommends';
 
@@ -39,7 +40,7 @@ export default class demo extends Component {
     return (
       <Navigator
         style={{flex:1}}
-        initialRoute={{component: Recommends}}
+        initialRoute={{component: MyViewPager}}
         configureScene={this.configureScene}
         renderScene={this.renderScene}/>
     );
@@ -56,6 +57,7 @@ export default class demo extends Component {
     return Navigator.SceneConfigs.PushFromRight; // 右侧弹出
   }
 }
+
   //flexDirection:'row',
 const styles = StyleSheet.create({
   container: {

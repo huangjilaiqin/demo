@@ -19,6 +19,7 @@ import {
   PixelRatio, 
   Dimensions,
   Navigator,
+  BackAndroid,
 } from 'react-native';
 
 import moment from 'moment';
@@ -28,7 +29,7 @@ import {renderListEmptyView} from './common/ViewUtil';
 export default class Recommends extends Component {
   constructor(props){
     super(props);
-    this.state={num:0,loading:true};
+    this.state={num:0,loading:false};
     this.type2Name={
       0:'串关',
       1:'胜平负',
@@ -45,12 +46,18 @@ export default class Recommends extends Component {
     this.pullDatas=this.pullDatas.bind(this);
     this.initDatas=this.initDatas.bind(this);
     this.onRefresh=this.onRefresh.bind(this);
+    this.handleBack=this.handleBack.bind(this);
 
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.datas=[];
     this.dsData=this.ds.cloneWithRows(this.datas);
 
     //this._pullNews();
+
+    
+  }
+  componentDidMount () {
+    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
 
     this.socket = new SocketIO('http://ws-live.qqshidao.com',{'log':true});
     this.socket.connect();
@@ -66,11 +73,23 @@ export default class Recommends extends Component {
       //this.setState((previousState, currentProps)=>{num:previousState.num++,net:1});
       this.setState({num:1,loading:false});
     });
-    this.initDatas();
     console.log('get',PixelRatio.get());
     console.log('Dimensions',Dimensions.get('window'));
     console.log('getFontScale',PixelRatio.getFontScale());
     console.log('getPixelSizeForLayoutSize',PixelRatio.getPixelSizeForLayoutSize(196));
+    this.initDatas();
+  }
+  componentWillUnmount () {
+    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+  handleBack(){
+    let navigator = this.props.navigator;
+    if (navigator && navigator.getCurrentRoutes().length > 1) {
+      navigator.pop();
+      return true;
+    }else{
+      return false;
+    }
   }
 
   itemPress(){
@@ -84,6 +103,7 @@ export default class Recommends extends Component {
   }
 
   initDatas(){
+    this.setState({num:1,loading:true});
     this.socket.emit('myTest',{});
   }
 
