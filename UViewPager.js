@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 import ViewPager from 'react-native-viewpager';
 
-export default class MyViewPager extends Component {
+export default class UViewPager extends Component {
   constructor(props){
     super(props);
     let IMGS = [
@@ -36,56 +36,31 @@ export default class MyViewPager extends Component {
     });
     this.state={dataSource: dataSource.cloneWithPages(IMGS)};
     this._renderPage=this._renderPage.bind(this);
-    this.handleBack=this.handleBack.bind(this);
  
-  }
-  componentDidMount () {
-    BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
-  }
-  componentWillUnmount () {
-    BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
-  }
-  handleBack(){
-    let navigator = this.props.navigator;
-    if (navigator && navigator.getCurrentRoutes().length > 1) {
-      navigator.pop();
-      return true;
-    }else{
-      return false;
-    }
   }
   render(){
     return (
-      <View style={{flex:1,height:200}}>
-        <Text>viewpager</Text>
-        <ViewPager
-          style={{flex:1}}
-          dataSource={this.state.dataSource}
-          renderPage={this._renderPage}
-          renderPageIndicator={false}
-          isLoop={false}
-          initialPage={0}
-          autoPlay={false}/>
-        <Text style={{height:200}}>bottom</Text>
-      </View>
+      <ViewPager
+        style={{flex: 1}}
+        dataSource={this.state.dataSource}
+        renderPage={this._renderPage}
+        isLoop={false}
+        autoPlay={false}/>
     );
   }
   _renderPage(data: Object,pageID: number | string,) {
     console.log(data);
     return (
-      <View style={{width:Dimensions.get('window').width}}>
-        <Text>{data}</Text>
-        <Image
-          source={{uri: data}}
-          style={styles.base} />
-      </View>
+      <Image
+        source={{uri:data}}
+        style={styles.page}
+      />
     );
   }
 }
 const styles = StyleSheet.create({
   page: {
-    width: 200,
-    height: 200,
+    width: Dimensions.get('window').width,
   },
   base:{
     width: Dimensions.get('window').width,

@@ -26,6 +26,7 @@ import SocketIO from 'react-native-socketio';
 import {renderListEmptyView} from './common/ViewUtil';
 import Main from './Main';
 import MyViewPager from './MyViewPager';
+import UViewPager from './UViewPager';
 import Recommends from './Recommends';
 
 
