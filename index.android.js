@@ -39,11 +39,18 @@ export default class demo extends Component {
 
   render() {
     return (
+      /*
       <Navigator
         style={{flex:1}}
         initialRoute={{component: MyViewPager}}
         configureScene={this.configureScene}
         renderScene={this.renderScene}/>
+      <MyViewPager/>
+        */
+        <View style={{height:100,width:100,flex:1,backgroundColor:'grey'}}>
+          <View style={{height:100,backgroundColor:'red'}}>
+          </View>
+        </View>
     );
   }
 

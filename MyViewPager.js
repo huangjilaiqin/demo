@@ -56,20 +56,23 @@ export default class MyViewPager extends Component {
   }
   render(){
     return (
-      <View style={{flex:1,height:200}}>
+      <View style={{flex:1,height:200,backgroundColor:'grey'}}>
         <Text>viewpager</Text>
-        <ViewPager
-          style={{flex:1}}
-          dataSource={this.state.dataSource}
-          renderPage={this._renderPage}
-          renderPageIndicator={false}
-          isLoop={false}
-          initialPage={0}
-          autoPlay={false}/>
-        <Text style={{height:200}}>bottom</Text>
+        
+        <Text style={{}}>bottom</Text>
       </View>
     );
   }
+  /*
+  <ViewPager
+          style={{height:200}}
+          dataSource={this.state.dataSource}
+          renderPage={this._renderPage}
+          //renderPageIndicator={false}
+          isLoop={false}
+          initialPage={0}
+          autoPlay={false}/>
+          */
   _renderPage(data: Object,pageID: number | string,) {
     console.log(data);
     return (
