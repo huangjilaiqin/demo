@@ -10,24 +10,10 @@ import {
   StyleSheet,
   Text,
   View,
-  Image, 
-  ListView,
-  TouchableHighlight,
-  Clipboard,
-  Vibration,
-  RefreshControl,
-  PixelRatio, 
-  Dimensions,
   Navigator,
 } from 'react-native';
 
-import moment from 'moment';
-import SocketIO from 'react-native-socketio';
-import {renderListEmptyView} from './common/ViewUtil';
 import Main from './Main';
-import MyViewPager from './MyViewPager';
-import UViewPager from './UViewPager';
-import Recommends from './Recommends';
 
 
 export default class demo extends Component {
@@ -39,18 +25,17 @@ export default class demo extends Component {
 
   render() {
     return (
-      /*
       <Navigator
         style={{flex:1}}
-        initialRoute={{component: MyViewPager}}
+        initialRoute={{component: Main}}
         configureScene={this.configureScene}
         renderScene={this.renderScene}/>
-      <MyViewPager/>
-        */
-        <View style={{height:100,width:100,flex:1,backgroundColor:'grey'}}>
+      /*
+        <View style={{height:200,width:200,backgroundColor:'grey'}}>
           <View style={{height:100,backgroundColor:'red'}}>
           </View>
         </View>
+        */
     );
   }
 
