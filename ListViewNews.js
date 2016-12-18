@@ -26,17 +26,20 @@ import moment from 'moment';
 import SocketIO from 'react-native-socketio';
 import {renderListEmptyView} from './common/ViewUtil';
 import {sleep} from './Util';
+import NewsItem from './components/NewsItem';
+import CustomWebView from './components/CustomWebView';
 
-export default class ListViewDemo extends Component {
+export default class ListViewNews extends Component {
   constructor(props){
     super(props);
     this.state={foot:1,loading:false,haveMore:true};
+    console.log('ListViewNews :',this);
 
     this.itemPress=this.itemPress.bind(this);
     this.itemLongPress=this.itemLongPress.bind(this);
     
     this.renderHeader=this.renderHeader.bind(this);
-    this.randerRow=this.randerRow.bind(this);
+    this.renderRow=this.renderRow.bind(this);
     this.renderFooter=this.renderFooter.bind(this);
     this.renderSeparator=this.renderSeparator.bind(this);
 
@@ -67,6 +70,7 @@ export default class ListViewDemo extends Component {
   }
   handleBack(){
     let navigator = this.props.navigator;
+    console.log('ListViewNews handleBack:',this);
     if (navigator && navigator.getCurrentRoutes().length > 1) {
       navigator.pop();
       return true;
@@ -75,8 +79,9 @@ export default class ListViewDemo extends Component {
     }
   }
 
-  itemPress(){
+  itemPress(data){
     console.log('itemPress');
+    this.props.navigator.push({component:CustomWebView,passProps:{url:data.url}});
   }
   itemLongPress(data){
     console.log('itemLongPress');
@@ -87,22 +92,25 @@ export default class ListViewDemo extends Component {
 
   async initDatas(){
     this.setState({loading:true});
-    await sleep(1000);
-    for(let i=0;i<5;i++){
-      this.datas.push({
-        id:i,
-        name:'hj'+this.state.foot*5+i,
-      });
+    let result=await fetch('http://v.juhe.cn/toutiao/index?type=yule&key=4d989f478e4896d0cb5b762538c90587');
+    let obj=await result.json();
+    if(obj.error_code==0){
+      this.datas=obj.result.data;
+      console.log(this.datas);
+      this.dsData=this.ds.cloneWithRows(this.datas);
     }
-    this.dsData=this.ds.cloneWithRows(this.datas);
-    this.setState({loading:false});
+    //todo 没有上拉加载所以加载数据后就设置成false
+    this.setState({loading:false,haveMore:false});
   }
 
   async pullDownDatas(){
+    /*
     this.setState({loading:true});
     await sleep(2000);
     //请求网络数据
     this.setState({loading:false});
+    */
+    this.initDatas();
   }
 
   async pullUpDatas(){
@@ -127,32 +135,9 @@ export default class ListViewDemo extends Component {
   onPressEvent(e){
     console.log('onPressEvent:',e);
   }
-  randerRow(data){
-    console.log('renderRow id:',data.id);
+  renderRow(data, sectionID, rowID){
     return (
-      /*
-      <TouchableHighlight 
-        key={data.id}
-        underlayColor="white"
-        onPressIn={()=>this.onPressEvent('onPressIn')}
-        onPressOut={()=>this.onPressEvent('onPressOut')}
-        onPress={()=>this.itemPress(data)}
-        onLongPress={()=>this.itemLongPress(data)}
-        delayLongPress={1000}
-        >
-        <View 
-          key={data.id}
-          style={styles.dataItem}>
-          <Text>{data.name}</Text>
-        </View>
-      </TouchableHighlight>
-      /*/
-      <View 
-        key={data.id}
-        style={styles.dataItem}>
-        <Text>{data.name}</Text>
-      </View>
-      //*/
+      <NewsItem data={data} onPress={this.itemPress}/>
     ); 
   }
   
@@ -220,7 +205,7 @@ export default class ListViewDemo extends Component {
           <ListView
             style={styles.listStyle}
             dataSource={this.dsData}
-            renderRow={this.randerRow}
+            renderRow={this.renderRow}
             enableEmptySections = {true} 
             refreshControl={
               <RefreshControl
@@ -230,7 +215,7 @@ export default class ListViewDemo extends Component {
             }
             onEndReached={this.onEndReached}
             onEndReachedThreshold={80}
-            renderSeparator={this.renderSeparator}
+            //renderSeparator={this.renderSeparator}
             renderFooter={this.renderFooter}
             renderHeader={this.renderHeader}
           />
