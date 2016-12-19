@@ -39,12 +39,19 @@ export default class CustomWebView extends Component {
     let loading=this.state.loading?<ActivityIndicator style={{alignSelf:'flex-start'}}/>:null;
     return (
       <View style={{backgroundColor:'grey',width:windowWidth,height:windowHeight}}>
-        {loading}
-        <WebView 
-          source={{uri:url}}
-          onLoadStart={()=>this.setState({loading:true})}
-          onLoadEnd={()=>this.setState({loading:false})}
-          />
+        <View
+          style={{width:windowWidth,height:windowHeight}}
+          >
+          <WebView 
+            source={{uri:url}}
+            onLoadStart={()=>this.setState({loading:true})}
+            onLoadEnd={()=>this.setState({loading:false})}
+            >
+          </WebView>
+        </View>
+        <View style={{backgroundColor:'green',marginTop:-1*windowHeight}}>
+          <Text>loading 2...</Text>
+        </View>
       </View>
     ); 
   }
