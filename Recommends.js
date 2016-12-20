@@ -73,10 +73,6 @@ export default class Recommends extends Component {
       //this.setState((previousState, currentProps)=>{num:previousState.num++,net:1});
       this.setState({num:1,loading:false});
     });
-    console.log('get',PixelRatio.get());
-    console.log('Dimensions',Dimensions.get('window'));
-    console.log('getFontScale',PixelRatio.getFontScale());
-    console.log('getPixelSizeForLayoutSize',PixelRatio.getPixelSizeForLayoutSize(196));
     this.initDatas();
   }
   componentWillUnmount () {
