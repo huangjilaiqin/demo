@@ -74,7 +74,6 @@ export default class Recommends extends Component {
       });
       this.initDatas();
     });
-    this.initDatas();
   }
 
   componentWillUnmount () {
