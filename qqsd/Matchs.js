@@ -25,15 +25,16 @@ import {
 
 import moment from 'moment';
 import SocketIO from 'react-native-socketio';
-import {renderListEmptyView} from '../common/ViewUtil';
+import {renderListEmptyView,renderListLoadingView} from '../common/ViewUtil';
 import {sleep} from '../Util';
 import NewsItem from '../components/NewsItem';
 import CustomWebView from '../components/CustomWebView';
+import MatchItem from './MatchItem';
 
 export default class Matchs extends Component {
   constructor(props){
     super(props);
-    this.state={foot:1,loading:true,haveMore:true};
+    console.log('matchs constructor');
 
     this.itemPress=this.itemPress.bind(this);
     this.itemLongPress=this.itemLongPress.bind(this);
@@ -54,10 +55,8 @@ export default class Matchs extends Component {
 
 
     this.handleBack=this.handleBack.bind(this);
-
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    this.datas=[];
-    this.dsData=this.ds.cloneWithRows(this.datas);
+
   }
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
@@ -125,7 +124,7 @@ export default class Matchs extends Component {
   }
   renderRow(data, sectionID, rowID){
     return (
-      <NewsItem data={data} onPress={this.itemPress}/>
+      <MatchItem data={data}/>
     ); 
   }
   
@@ -183,37 +182,38 @@ export default class Matchs extends Component {
   }
 
   render() {
-    console.log('match render',this.props);
-    return null;
-    /*
-     *
-    let size=this.dsData.getRowCount();
-    if(!this.state.loading && size==0){
+    let matchDatas=this.props.datas;
+    let loading=this.props.loading;
+    console.log(matchDatas);
+
+    if(loading){
+      return renderListLoadingView();
+    }else if(matchDatas.length==0){
       return renderListEmptyView('暂无数据',this.onRefresh);
     }else{
+      let dsData=this.ds.cloneWithRows(matchDatas);
       return (
         <View style={styles.container}>
           <ListView
             style={styles.listStyle}
-            dataSource={this.dsData}
+            dataSource={dsData}
             renderRow={this.renderRow}
             enableEmptySections = {true} 
             refreshControl={
               <RefreshControl
                 onRefresh={this.onRefresh}
-                refreshing={this.state.loading}
+                refreshing={loading}
                 />
             }
-            onEndReached={this.onEndReached}
-            onEndReachedThreshold={80}
+            //onEndReached={this.onEndReached}
+            //onEndReachedThreshold={80}
             //renderSeparator={this.renderSeparator}
-            renderFooter={this.renderFooter}
-            renderHeader={this.renderHeader}
+            //renderFooter={this.renderFooter}
+            //renderHeader={this.renderHeader}
           />
         </View>
       );
     }
-    */
   }
 }
 
