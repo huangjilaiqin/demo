@@ -47,6 +47,14 @@ export function renderListEmptyView(tip,cb){
   ); 
 }
 
+export function renderListLoadingView(tip,cb){
+  return (
+    <View>
+      <Text>正在加载数据...</Text>
+    </View>
+  ); 
+}
+
 /*
  * style={{height:20}}
 export function renderListErrorView(tip,cb){

@@ -20,6 +20,7 @@ import {
   Dimensions,
   Navigator,
   BackAndroid,
+  InteractionManager,
 } from 'react-native';
 
 import moment from 'moment';
@@ -32,7 +33,7 @@ import CustomWebView from './components/CustomWebView';
 export default class ListViewNews extends Component {
   constructor(props){
     super(props);
-    this.state={foot:1,loading:false,haveMore:true};
+    this.state={foot:1,loading:true,haveMore:true};
     console.log('ListViewNews :',this);
 
     this.itemPress=this.itemPress.bind(this);
@@ -63,11 +64,15 @@ export default class ListViewNews extends Component {
   }
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
-    this.initDatas();
+    //this.initDatas();
+    InteractionManager.runAfterInteractions(()=>{
+      this.initDatas();
+    });
   }
   componentWillUnmount () {
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
   }
+  
   handleBack(){
     let navigator = this.props.navigator;
     console.log('ListViewNews handleBack:',this);
@@ -91,16 +96,25 @@ export default class ListViewNews extends Component {
   }
 
   async initDatas(){
+    console.log('before initDatas:',new Date());
     this.setState({loading:true});
     let result=await fetch('http://v.juhe.cn/toutiao/index?type=yule&key=4d989f478e4896d0cb5b762538c90587');
     let obj=await result.json();
     if(obj.error_code==0){
-      this.datas=obj.result.data;
-      console.log(this.datas);
+      //this.datas=obj.result.data;
+      this.datas=[];
+      let ds=obj.result.data;
+      for(let i=0;i<10;i++){
+        let size=ds.length;
+        for(let j=0;j<size;j++)
+          this.datas.push(ds[j]);
+      }
+      console.log('news size:',this.datas.length);
       this.dsData=this.ds.cloneWithRows(this.datas);
     }
     //todo 没有上拉加载所以加载数据后就设置成false
     this.setState({loading:false,haveMore:false});
+    console.log('after initDatas:',new Date());
   }
 
   async pullDownDatas(){

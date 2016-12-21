@@ -20,47 +20,57 @@ import {
   Dimensions,
   Navigator,
   BackAndroid,
+  InteractionManager,
 } from 'react-native';
 
 import moment from 'moment';
 import SocketIO from 'react-native-socketio';
-import {renderListEmptyView} from './common/ViewUtil';
-import {sleep} from './Util';
+import {renderListEmptyView} from '../common/ViewUtil';
+import {sleep} from '../Util';
+import NewsItem from '../components/NewsItem';
+import CustomWebView from '../components/CustomWebView';
 
-export default class ListViewDemo extends Component {
+export default class Matchs extends Component {
   constructor(props){
     super(props);
-    this.state={foot:1,loading:false};
-    
-    this._randerRow=this._randerRow.bind(this);
-    this._onEndReached=this._onEndReached.bind(this);
-    this._renderSeparator=this._renderSeparator.bind(this);
-    //this._pullNews=this._pullNews.bind(this);
+    this.state={foot:1,loading:true,haveMore:true};
+
     this.itemPress=this.itemPress.bind(this);
     this.itemLongPress=this.itemLongPress.bind(this);
-    this.pullDatas=this.pullDatas.bind(this);
-    this.initDatas=this.initDatas.bind(this);
-    this.onRefresh=this.onRefresh.bind(this);
-    this.handleBack=this.handleBack.bind(this);
+    
+    this.renderHeader=this.renderHeader.bind(this);
+    this.renderRow=this.renderRow.bind(this);
     this.renderFooter=this.renderFooter.bind(this);
+    this.renderSeparator=this.renderSeparator.bind(this);
+
+
+    //上拉加载
+    this.onEndReached=this.onEndReached.bind(this);
+    this.pullUpDatas=this.pullUpDatas.bind(this);
+    
+    //下拉加载
+    this.onRefresh=this.onRefresh.bind(this);
+    this.pullDownDatas=this.pullDownDatas.bind(this);
+
+
+    this.handleBack=this.handleBack.bind(this);
 
     this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.datas=[];
     this.dsData=this.ds.cloneWithRows(this.datas);
-
-
-    
   }
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
-
-    this.initDatas();
+    InteractionManager.runAfterInteractions(()=>{
+    });
   }
   componentWillUnmount () {
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
   }
+  
   handleBack(){
     let navigator = this.props.navigator;
+    console.log('Matchs handleBack:',this);
     if (navigator && navigator.getCurrentRoutes().length > 1) {
       navigator.pop();
       return true;
@@ -69,94 +79,67 @@ export default class ListViewDemo extends Component {
     }
   }
 
-  itemPress(){
+  itemPress(data){
     console.log('itemPress');
+    this.props.navigator.push({component:CustomWebView,passProps:{url:data.url}});
   }
-  itemLongPress(recom){
+  itemLongPress(data){
     console.log('itemLongPress');
-    Clipboard.setString(recom.explains)
+    Clipboard.setString(data.explains)
     Vibration.vibrate(5);
     //var content = Clipboard.getString();
   }
 
-  async initDatas(){
+
+  async pullDownDatas(){
+    /*
     this.setState({loading:true});
+    await sleep(2000);
+    //请求网络数据
+    this.setState({loading:false});
+    */
+    this.initDatas();
+  }
+
+  async pullUpDatas(){
     await sleep(1000);
+    let base=this.state.foot*5;
     for(let i=0;i<5;i++){
       this.datas.push({
-        id:i,
-        name:'hj'+i,
+        id:base+i,
+        name:'hj'+i+new Date(),
       });
     }
     this.dsData=this.ds.cloneWithRows(this.datas);
-    this.setState({loading:false});
-  }
-
-  pullDatas(){
-    this.setState({loading:true});
+    console.log('before state:',this.state);
+    this.setState((pre)=>{this.state.foot=pre.foot++;});
+    console.log('after state:',this.state);
+    //todo 这个为什么错的
+    //this.setState((pre)=>this.state.foot=pre.foot++);
+    if(this.state.foot>3 && this.state.haveMore)
+      this.setState({haveMore:false});
   }
 
   onPressEvent(e){
     console.log('onPressEvent:',e);
   }
-  _randerRow(recom){
+  renderRow(data, sectionID, rowID){
     return (
-      /*
-      <TouchableHighlight 
-        key={recom.id}
-        underlayColor="white"
-        onPressIn={()=>this.onPressEvent('onPressIn')}
-        onPressOut={()=>this.onPressEvent('onPressOut')}
-        onPress={()=>this.itemPress(recom)}
-        onLongPress={()=>this.itemLongPress(recom)}
-        delayLongPress={1000}
-        >
-        <View 
-          key={recom.id}
-          style={styles.recomItem}>
-          <Text>item</Text>
-        </View>
-      </TouchableHighlight>
-      */
-      <View 
-        key={recom.id}
-        style={styles.recomItem}>
-        <Text>item</Text>
-      </View>
+      <NewsItem data={data} onPress={this.itemPress}/>
     ); 
   }
-  async pullUpDatas(){
-    await sleep(1000);
-    for(let i=0;i<5;i++){
-      this.datas.push({
-        id:i,
-        name:'hj'+i+new Date(),
-      });
-    }
-    this.dsData=this.ds.cloneWithRows(this.datas);
-    this.setState((pre)=>this.state.foot=pre.foot++);
-    /*
-    if(this.state.foot<=3)
-      this.setState({haveMore:true});
-    else if(this.state.haveMore)
-      this.setState({haveMore:false});
-      */
-  }
-  _onEndReached(obj){
-    //this._pullNews(recomType,this.maxId);
+  
+  onEndReached(obj){
     if(obj){
-      console.log('real endreached',obj);
-      console.log(this.state);
-      this.setState({foot:this.state.foot++});
-      this.setState((pre)=>{console.log(pre);this.state.foot=pre.foot++;});
+      if(this.state.haveMore)
+        this.pullUpDatas().catch((e)=>console.log('pullUpDatas error:',e));
     }else{
       console.log('endreached init listiview',obj);
-      
     }
   }
-  _renderSeparator(sectionID: number, rowID: number, adjacentRowHighlighted: bool){
+  renderSeparator(sectionID: number, rowID: number, adjacentRowHighlighted: bool){
     let key=`${sectionID}-${rowID}`;
-    console.log(key,sectionID,rowID);
+    console.log('renderSeparator key:',key);
     return (
       <View 
         key={key}
@@ -168,34 +151,42 @@ export default class ListViewDemo extends Component {
     );  
   }
   renderHeader(){
+    return null;
+    /*
     return (
       <View>
         <Text>Header</Text>
       </View>
     );
+    */
   }
   renderFooter(){
     console.log('renderFooter');
-    if(this.state.foot<10)
+    let size=this.dsData.getRowCount();
+    if(this.state.haveMore && size>0)
       return (
-        <View>
-          <Text>加载更多</Text>
+        <View style={{alignItems:'center',justifyContent:'center',height:36}}>
+          <Text>加载更多...</Text>
         </View>
       );
-    else if(this.state.foot>=10)
+    else if(!this.state.haveMore)
       return (
-        <View>
+        <View style={{alignItems:'center',justifyContent:'center',height:36}}>
           <Text>没有更多数据了</Text>
         </View>
       );
+    else
+      return null;
   }
   onRefresh(){
-    //this.pullDatas();
-    console.log('下拉');
+    this.pullDownDatas().then(()=>{console.log('下拉完成')}).catch((e)=>console.log('pullDownDatas error:',e));
   }
 
   render() {
-    console.log('render:',this.state,size);
+    console.log('match render',this.props);
+    return null;
+    /*
+     *
     let size=this.dsData.getRowCount();
     if(!this.state.loading && size==0){
       return renderListEmptyView('暂无数据',this.onRefresh);
@@ -205,7 +196,7 @@ export default class ListViewDemo extends Component {
           <ListView
             style={styles.listStyle}
             dataSource={this.dsData}
-            renderRow={this._randerRow}
+            renderRow={this.renderRow}
             enableEmptySections = {true} 
             refreshControl={
               <RefreshControl
@@ -213,15 +204,16 @@ export default class ListViewDemo extends Component {
                 refreshing={this.state.loading}
                 />
             }
-            onEndReached={this._onEndReached}
+            onEndReached={this.onEndReached}
             onEndReachedThreshold={80}
-            renderSeparator={this._renderSeparator}
+            //renderSeparator={this.renderSeparator}
             renderFooter={this.renderFooter}
             renderHeader={this.renderHeader}
           />
         </View>
       );
     }
+    */
   }
 }
 
@@ -234,7 +226,7 @@ const styles = StyleSheet.create({
   },
   listStyle: {
   },
-  recomItem: {
+  dataItem: {
     flex:1,
     height:300,
     padding:8,

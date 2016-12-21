@@ -21,6 +21,7 @@ import MyViewPager from './MyViewPager';
 import Recommends from './Recommends';
 import ListViewDemo from './ListViewDemo';
 import ListViewNews from './ListViewNews';
+import Qqsd from './qqsd/Qqsd';
 
 export default class Main extends Component {
   constructor(props){
@@ -35,6 +36,7 @@ export default class Main extends Component {
         <Button style={styles.myButton} title='myViewPager' onPress={()=>this.props.navigator.push({component:MyViewPager})} />
         <Button style={styles.myButton} title='ListView示例' onPress={()=>this.props.navigator.push({component:ListViewDemo})} />
         <Button style={styles.myButton} title='新闻' onPress={()=>this.props.navigator.push({component:ListViewNews})} />
+        <Button style={styles.myButton} title='球球是道' onPress={()=>this.props.navigator.push({component:Qqsd})} />
       </View>
     );
   }

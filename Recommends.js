@@ -20,16 +20,17 @@ import {
   Dimensions,
   Navigator,
   BackAndroid,
+  InteractionManager,
 } from 'react-native';
 
 import moment from 'moment';
 import SocketIO from 'react-native-socketio';
-import {renderListEmptyView} from './common/ViewUtil';
+import {renderListEmptyView,renderListLoadingView} from './common/ViewUtil';
 
 export default class Recommends extends Component {
   constructor(props){
     super(props);
-    this.state={num:0,loading:false};
+    this.state={loading:true};
     this.type2Name={
       0:'串关',
       1:'胜平负',
@@ -40,7 +41,6 @@ export default class Recommends extends Component {
     this._randerRow=this._randerRow.bind(this);
     this._onEndReached=this._onEndReached.bind(this);
     this._renderSeparator=this._renderSeparator.bind(this);
-    //this._pullNews=this._pullNews.bind(this);
     this.itemPress=this.itemPress.bind(this);
     this.itemLongPress=this.itemLongPress.bind(this);
     this.pullDatas=this.pullDatas.bind(this);
@@ -48,39 +48,48 @@ export default class Recommends extends Component {
     this.onRefresh=this.onRefresh.bind(this);
     this.handleBack=this.handleBack.bind(this);
 
-    this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    this.datas=[];
-    this.dsData=this.ds.cloneWithRows(this.datas);
-
-    //this._pullNews();
-
     
   }
+
   componentDidMount () {
     BackAndroid.addEventListener('hardwareBackPress', this.handleBack)
-
-    this.socket = new SocketIO('http://ws-live.qqshidao.com',{'log':true});
-    this.socket.connect();
-    console.log('to connect');
-    this.socket.on('connect',()=>{console.log('connect')});
-    this.socket.on('error',(err)=>{console.log('err',err)});
-    this.socket.on('myTest',(args)=>{
-      let recoms=args[0];
-      console.log('recoms:',recoms);
-      //todo
-      this.datas=recoms;
+    InteractionManager.runAfterInteractions(()=>{
+      this.ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+      this.datas=[];
       this.dsData=this.ds.cloneWithRows(this.datas);
-      //this.setState((previousState, currentProps)=>{num:previousState.num++,net:1});
-      this.setState({num:1,loading:false});
+
+      this.socket = new SocketIO('http://ws-live.qqshidao.com');
+      this.socket.connect();
+      this.socket.on('connect',()=>{console.log('connect')});
+      this.socket.on('error',(err)=>{
+        console.log('err',err)
+        this.setState({loading:false});
+      });
+      this.socket.on('myTest',(args)=>{
+        let recoms=args[0];
+        this.datas=recoms;
+        this.dsData=this.ds.cloneWithRows(this.datas);
+        //this.setState((previousState, currentProps)=>{num:previousState.num++,net:1});
+        this.setState({loading:false});
+      });
+      this.initDatas();
     });
     this.initDatas();
   }
+
   componentWillUnmount () {
     BackAndroid.removeEventListener('hardwareBackPress', this.handleBack)
+    //todo bug 这个socket会保持所有的注册函数在一个全局队列里，即使关掉也会有
+    this.socket.on('myTest',()=>console.log('myTest old'));
+    this.socket.on('connect',()=>console.log('connect old'));
+    this.socket.on('error',()=>console.log('error old'));
+    this.socket.disconnect();
+    this.socket=null;
   }
   handleBack(){
     let navigator = this.props.navigator;
     if (navigator && navigator.getCurrentRoutes().length > 1) {
+      console.log('Recommends pop');
       navigator.pop();
       return true;
     }else{
@@ -99,7 +108,7 @@ export default class Recommends extends Component {
   }
 
   initDatas(){
-    this.setState({num:1,loading:true});
+    this.setState({loading:true});
     this.socket.emit('myTest',{});
   }
 
@@ -120,7 +129,7 @@ export default class Recommends extends Component {
         onPressOut={()=>this.onPressEvent('onPressOut')}
         onPress={()=>this.itemPress(recom)}
         onLongPress={()=>this.itemLongPress(recom)}
-        delayLongPress={1000}
+        delayLongPress={1500}
         >
         <View 
           key={recom.id}
@@ -158,7 +167,6 @@ export default class Recommends extends Component {
   }
   _onEndReached(){
     console.log('_onEndReached:',arguments);
-    //this._pullNews(recomType,this.maxId);
     this.maxId++;
   }
   _renderSeparator(sectionID: number, rowID: number, adjacentRowHighlighted: bool){
@@ -192,9 +200,12 @@ export default class Recommends extends Component {
   }
 
   render() {
-    console.log('render:',this.state,size);
-    let size=this.dsData.getRowCount();
-    if(!this.state.loading && size==0){
+    let size=0;
+    if(this.dsData)
+      size=this.dsData.getRowCount();
+    if(this.state.loading)
+      return renderListLoadingView();
+    else if(!this.state.loading && size==0){
       return renderListEmptyView('暂无数据',this.onRefresh);
     }else{
       return (
