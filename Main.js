@@ -29,10 +29,10 @@ export default class Main extends Component {
  
     this._navigate=this._navigate.bind(this);
   }
-  //<Button style={styles.myButton} title='recommend' onPress={()=>this.props.navigator.push({component:Recommends})} />
   render(){
     return (
       <View>
+        <Button style={styles.myButton} title='recommend' onPress={()=>this.props.navigator.push({component:Recommends})} />
         <Button style={styles.myButton} title='myViewPager' onPress={()=>this.props.navigator.push({component:MyViewPager})} />
         <Button style={styles.myButton} title='ListView示例' onPress={()=>this.props.navigator.push({component:ListViewDemo})} />
         <Button style={styles.myButton} title='新闻' onPress={()=>this.props.navigator.push({component:ListViewNews})} />

@@ -46,30 +46,27 @@ export default class LiveMatchsList extends Component {
     if(obj.code==100){
       this.datas=obj.data.list;
       this.cid=obj.cid;
+      for(let i=0;i<this.datas.length;i++){
+        let d=this.datas[i];
+        let status=parseInt(d.status);
+        let sortN=0;
+        if(status==0){
+          sortN=2;
+        }else if(status>=1 && status<=3)
+          sortN=1;
+        else if(status==4)
+          sortN=3;
+        else
+          sortN=4;
+        //this.datas[i]['sortN']=sortN;
+        d['sortN']=sortN;
+      }
       this.datas=this.datas.sort((a,b)=>{
-        let astate=a.status;
-        let bstate=b.status;
-        if(astate==0)
-          astate==2;
-        else if(astate>=1 && astate<=3)
-          astate=1;
-        else if(astate==4)
-          astate=3;
-        else
-          astate=4;
-
-        if(bstate==0)
-          bstate==2;
-        else if(bstate>=1 && bstate<=3)
-          bstate=1;
-        else if(bstate==4)
-          bstate=3;
-        else
-          bstate=4;
-
-        if(astate>bstate)
+        let asortN=a.sortN;
+        let bsortN=b.sortN;
+        if(asortN>bsortN)
           return 1;
-        else if(astate<bstate)
+        else if(asortN<bsortN)
           return -1;
         else{
           let avs=new Date(a.vsdate).getTime();
@@ -85,10 +82,8 @@ export default class LiveMatchsList extends Component {
           }
         }
       });
-      /*
       for(let i=0;i<this.datas.length;i++)
-      console.log(this.datas[i].status,this.datas[i].vsdate,this.datas[i].fid);
-      */
+        console.log(this.datas[i].sortN,this.datas[i].status,this.datas[i].vsdate,this.datas[i].fid);
     }
     this.setState({loading:false});
   }

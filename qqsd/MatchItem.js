@@ -54,6 +54,7 @@ export default class MatchItem extends Component {
       //进行中
       timestateColor=styles.timestateIng;
       scoreColor=styles.scoreIng;
+      stateText='12'; 
     }else if(status==4){
       //完场
       timestateColor=styles.timestateNotIng;
