@@ -38,10 +38,17 @@ export default class MyViewPager extends Component {
       this.setState({loading:false});
     });
     this.socket.on('init',(args)=>{
-      console.log('init:',args);
+      let data=JSON.parse(args[0]).data;
     });
     this.socket.on('change',(args)=>{
-      console.log('change:',args);
+      let data=JSON.parse(args[0]).data;
+      /*
+       [
+         [赛事id,赛事状态,"主队进球,主队半场进球,主队红牌,主队黄牌","客队进球,客队半场进球,客队红牌,客队黄牌","状态修改时间","pptv赛前视频id","pptv直播id","pptv赛后视频","是否存在RB动画","加时状态,加时主队比分,加时客队比分,主队点球比分,客队点球比分","备注"],
+         [赛事id,赛事状态,"主队进球,主队半场进球,主队红牌,主队黄牌","客队进球,客队半场进球,客队红牌,客队黄牌","状态修改时间","pptv赛前视频id","pptv直播id","pptv赛后视频","是否存在RB动画","加时状态,加时主队比分,加时客队比分,主队点球比分,客队点球比分","备注"]
+         [赛事id,赛事状态,"主队进球,主队半场进球,主队红牌,主队黄牌","客队进球,客队半场进球,客队红牌,客队黄牌","状态修改时间","pptv赛前视频id","pptv直播id","pptv赛后视频","是否存在RB动画","加时状态,加时主队比分,加时客队比分,主队点球比分,客队点球比分","备注"]
+       ]
+       * */
     });
     setTimeout(()=>{
       this.setState({nothing:new Date()});
