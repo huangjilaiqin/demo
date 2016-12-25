@@ -18,6 +18,8 @@ import {
   InteractionManager,
 } from 'react-native';
 
+import StateTime from './StateTime';
+
 export default class MatchItem extends Component {
   constructor(props){
     super(props);
@@ -29,7 +31,6 @@ export default class MatchItem extends Component {
     let status=data.status;
     let hscore=data.hscore;
     let ascore=data.ascore;
-    let timestateColor=styles.timestateNotIng;
     let stateText='未'; 
 
     let scoreColor=styles.scoreNotIng;
@@ -44,6 +45,7 @@ export default class MatchItem extends Component {
     if(aredcard>0)
       aredcardTxt=<View style={styles.redcardBg}><Text style={styles.redcard}>{aredcard}</Text></View>;
 
+    let timestateColor=styles.timestateNotIng;
     if(status==0){
       //未开始
       hscore='-';
@@ -57,7 +59,6 @@ export default class MatchItem extends Component {
       stateText='12'; 
     }else if(status==4){
       //完场
-      timestateColor=styles.timestateNotIng;
       stateText='完'; 
       scoreColor=styles.scoreFinish;
     }else if(status==5){
@@ -71,6 +72,10 @@ export default class MatchItem extends Component {
     }else if(status==9){
       stateText='待定';
     }
+    let stateView=<Text style={[styles.timestate,timestateColor]}>{stateText}</Text>;
+    //todo
+    if(status>0 && status<4 && false)
+      stateView=<StateTime time='12' style={[styles.timestate,timestateColor]}>{stateText}</StateTime>
     if(status>=2 && status<=4)
       halfText=`半场${data.hhalfscore}-${data.ahalfscore}`
 
@@ -80,7 +85,7 @@ export default class MatchItem extends Component {
           <Text>{data.lname} {data.stime} {halfText}</Text>
         </View>
         <View style={styles.main}>
-          <Text style={[styles.timestate,timestateColor]}>{stateText}</Text>
+          {stateView}    
           <View style={styles.sperator}/>
           <View style={styles.maininfo}>
             <View style={styles.teaminfo}>
@@ -115,12 +120,13 @@ const styles = {
     marginRight:16,
   },
   timestate:{
-    marginRight:16,
+    //marginRight:16,
+    width:36,
   },
   timestateNotIng:{
     color:'grey',
   },
-  timestatetIng:{
+  timestateIng:{
     color:'green',
   },
   main : {

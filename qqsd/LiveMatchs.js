@@ -82,10 +82,13 @@ export default class LiveMatchsList extends Component {
           }
         }
       });
+      //todo
+      if(this.datas.length>0)
+        this.datas[0].status=1;
       /*
       for(let i=0;i<this.datas.length;i++)
         console.log(this.datas[i].sortN,this.datas[i].status,this.datas[i].vsdate,this.datas[i].fid);
-        */
+        //*/
     }
     this.setState({loading:false});
   }

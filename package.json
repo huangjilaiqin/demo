@@ -13,7 +13,8 @@
     "react-native-gifted-listview": "0.0.15",
     "react-native-scrollable-tab-view": "^0.7.0",
     "react-native-socketio": "^0.3.0",
-    "react-native-viewpager": "^0.2.13"
+    "react-native-viewpager": "^0.2.13",
+    "socket.io-client": "1.3.5"
   },
   "devDependencies": {
     "babel-jest": "17.0.2",
