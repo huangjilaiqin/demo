@@ -19,7 +19,7 @@ import {
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import FutureMatchs from './FutureMatchs';
 import Matchs from './Matchs';
-import SocketIO from 'react-native-socketio';
+import Groups from './Groups';
 
 export default class Qqsd extends Component {
   constructor(props){
@@ -50,7 +50,7 @@ export default class Qqsd extends Component {
         locked={true}
         >
         <Matchs tabLabel='赛事'/>
-        <Text tabLabel='圈子'/>
+        <Groups tabLabel='圈子'/>
       </ScrollableTabView>
     );
   }
