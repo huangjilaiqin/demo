@@ -22,6 +22,7 @@ import {
   BackAndroid,
   InteractionManager,
 } from 'react-native';
+import {time2see,get1Pixel} from '../Util';
 
 import moment from 'moment';
 import SocketIO from 'react-native-socketio';
@@ -170,7 +171,7 @@ export default class GroupList extends Component {
       <View 
         key={key}
         style={{
-          height: adjacentRowHighlighted ? 4 : 1,
+          height: adjacentRowHighlighted ? 4 : get1Pixel(),
           backgroundColor:'grey'
         }}
       />      

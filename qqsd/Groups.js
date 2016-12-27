@@ -52,11 +52,11 @@ export default class Groups extends Component {
         scrollWithoutAnimation={true}
       >
         <GroupList tabLabel='菠菜庄园' url={url} bodyStr='c_ck=&vtype=1&groupid=3&id=&threadtype=1&c_key=f11b1287365c925fe3ee76a048b367cc&pagesize=10&pageno=1'/>
-        <GroupList tabLabel='沙地绿茵' url={url} bodyStr='c_ck=&vtype=1&groupid=1&id=&threadtype=1&c_key=c28d797bdf3f789e759150cdac45957a&pagesize=10&pageno=1'/>
-        <GroupList tabLabel='烽火蓝图' url={url} bodyStr='c_ck=&vtype=1&groupid=1&id=&threadtype=1&c_key=c28d797bdf3f789e759150cdac45957a&pagesize=10&pageno=1'/>
-        <GroupList tabLabel='祸水红颜' url={url} bodyStr='c_ck=&vtype=1&groupid=1&id=&threadtype=1&c_key=c28d797bdf3f789e759150cdac45957a&pagesize=10&pageno=1'/>
-        <GroupList tabLabel='球球讲堂' url={url} bodyStr='c_ck=&vtype=1&groupid=1&id=&threadtype=1&c_key=c28d797bdf3f789e759150cdac45957a&pagesize=10&pageno=1'/>
-        <GroupList tabLabel='建议反馈' url={url} bodyStr='c_ck=&vtype=1&groupid=1&id=&threadtype=1&c_key=c28d797bdf3f789e759150cdac45957a&pagesize=10&pageno=1'/>
+        <GroupList tabLabel='沙地绿茵' url={url} bodyStr='c_ck=&vtype=1&groupid=1&id=&threadtype=1&c_key=f11b1287365c925fe3ee76a048b367cc&pagesize=10&pageno=1'/>
+        <GroupList tabLabel='烽火蓝图' url={url} bodyStr='c_ck=&vtype=1&groupid=4&id=&threadtype=1&c_key=f11b1287365c925fe3ee76a048b367cc&pagesize=10&pageno=1'/>
+        <GroupList tabLabel='祸水红颜' url={url} bodyStr='c_ck=&vtype=1&groupid=2&id=&threadtype=1&c_key=f11b1287365c925fe3ee76a048b367cc&pagesize=10&pageno=1'/>
+        <GroupList tabLabel='球球讲堂' url={url} bodyStr='c_ck=&vtype=1&groupid=6&id=&threadtype=1&c_key=f11b1287365c925fe3ee76a048b367cc&pagesize=10&pageno=1'/>
+        <GroupList tabLabel='建议反馈' url={url} bodyStr='c_ck=&vtype=1&groupid=5&id=&threadtype=1&c_key=f11b1287365c925fe3ee76a048b367cc&pagesize=10&pageno=1'/>
       </ScrollableTabView>
     );
   }

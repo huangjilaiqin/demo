@@ -1,5 +1,12 @@
 'use strict';
 
+import {
+  PixelRatio, 
+  Dimensions,
+} from 'react-native';
+
+
+
 export function sleep(times){
   return new Promise((resolve,reject)=>setTimeout(()=>resolve(),times));
 }
@@ -46,4 +53,8 @@ export function time2see(old){
     console.log(old);
     return '刚刚';
   }
+}
+
+export function get1Pixel(){
+  return 1/PixelRatio.get();
 }
