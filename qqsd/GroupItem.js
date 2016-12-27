@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 
 import StateTime from './StateTime';
+import {time2see} from '../Util';
 
 export default class GroupItem extends Component {
   constructor(props){
@@ -27,80 +28,39 @@ export default class GroupItem extends Component {
   
   render(){
     let data=this.props.data;
-    let halfText='';
-    let status=data.status;
-    let hscore=data.hscore;
-    let ascore=data.ascore;
-    let stateText='未'; 
 
-    let scoreColor=styles.scoreNotIng;
-
-    //红牌数据
-    let hredcard=data.hredcard;
-    let aredcard=data.aredcard;
-    let hredcardTxt=null;
-    let aredcardTxt=null;
-    if(hredcard>0)
-      hredcardTxt=<View style={styles.redcardBg}><Text style={styles.redcard}>{hredcard}</Text></View>;
-    if(aredcard>0)
-      aredcardTxt=<View style={styles.redcardBg}><Text style={styles.redcard}>{aredcard}</Text></View>;
-
-    let timestateColor=styles.timestateNotIng;
-    if(status==0){
-      //未开始
-      hscore='-';
-      ascore='-';
-      //styles.timestate.setColor('red');
-      //styles.timestate.color='red';
-    }else if(status<4){
-      //进行中
-      timestateColor=styles.timestateIng;
-      scoreColor=styles.scoreIng;
-      stateText='12'; 
-    }else if(status==4){
-      //完场
-      stateText='完'; 
-      scoreColor=styles.scoreFinish;
-    }else if(status==5){
-      stateText='取消';
-    }else if(status==6){
-      stateText='改期';
-    }else if(status==7){
-      stateText='腰斩';
-    }else if(status==8){
-      stateText='中断';
-    }else if(status==9){
-      stateText='待定';
+    let titleView=null;
+    if(data.title){
+      titleView=<Text style={styles.title}>{data.title}</Text>
     }
-    let stateView=<Text style={[styles.timestate,timestateColor]}>{stateText}</Text>;
-    //todo
-    if(status>0 && status<4 && false)
-      stateView=<StateTime time='12' style={[styles.timestate,timestateColor]}>{stateText}</StateTime>
-    if(status>=2 && status<=4)
-      halfText=`半场${data.hhalfscore}-${data.ahalfscore}`
-
+    let contentView=null;
+    if(data.partcontent){
+      contentView=<Text style={styles.content}>{data.partcontent}</Text>
+    }
+    let imgsView=null;
+    if(data.imglist){
+      let imgs=data.imglist.split(',');
+      imgsView=<View style={styles.imgs}>
+          {imgs.map((url,i)=>{
+            url='http://static.qiuqiusd.com'+url+'_180.jpg';
+            return <Image key={i} style={styles.listImg} source={{uri:url}}/>
+          })}
+        </View>
+    }
+  
     return (
       <View style={styles.base}>
         <View style={styles.info}>
-          <Text>{data.lname} {data.stime} {halfText}</Text>
+          <Image style={styles.headImg} source={{uri:data.headimg}}/>
+          <View style={styles.userinfo}>
+            <Text>{data.username}</Text>
+            <Text>{time2see(new Date(data.createtime))}</Text>
+          </View>
         </View>
         <View style={styles.main}>
-          {stateView}    
-          <View style={styles.sperator}/>
-          <View style={styles.maininfo}>
-            <View style={styles.teaminfo}>
-              <Text style={[styles.score,scoreColor]}>{hscore}</Text>
-              <Text style={styles.teamname}>{data.hname}</Text>
-              <Text>{data.hstanding}</Text>
-              {hredcardTxt}
-            </View>
-            <View style={styles.teaminfo}>
-              <Text style={[styles.score,scoreColor]}>{ascore}</Text>
-              <Text style={styles.teamname}>{data.aname}</Text>
-              <Text>{data.astanding}</Text>
-              {aredcardTxt}
-            </View>
-          </View>
+          {titleView}
+          {contentView}
+          {imgsView}
         </View>
       </View>
     );
@@ -113,27 +73,35 @@ const styles = {
     flex: 1,
     marginTop:8,
     marginBottom:8,
-    marginLeft:16,
+    marginLeft:8,
     marginRight:8,
   },
   info:{
-    marginRight:16,
+    flex:1,
+    flexDirection:'row',
   },
-  timestate:{
-    //marginRight:16,
-    width:36,
+  headImg:{
+    width:32,
+    height:32,
   },
-  timestateNotIng:{
-    color:'grey',
-  },
-  timestateIng:{
-    color:'green',
+  userinfo:{
+  
   },
   main : {
     flex:1,
-    flexDirection:'row',
     alignItems:'center',
     marginTop:8,
+  },
+  title:{},
+  content:{},
+  imgs:{
+    flex:1,
+    flexDirection:'row',
+    backgroundColor:'red',
+  },
+  listImg:{
+    width:64,
+    height:64,
   },
   sperator:{
     backgroundColor:'grey', 
@@ -141,47 +109,6 @@ const styles = {
     alignSelf:'stretch',
     marginRight:8,
   },
-  maininfo:{
-    flex:1,
-  },
-  teaminfo:{
-    flex:1, 
-    flexDirection:'row',
-    alignItems:'center',
-  },
-  score:{
-    fontSize:16,
-    marginRight:6,
-  },
-  scoreNotIng:{
-    color:'grey', 
-  },
-  scoreIng:{
-    color:'green', 
-  },
-  scoreFinish:{
-    color:'red',
-  },
-  teamname:{
-    fontSize:16,
-    marginRight:6,
-    color:'#234455',
-  },
-  redcardBg:{
-    backgroundColor:'red',
-    width:16,
-    height:16,
-    marginLeft:6,
-    justifyContent:'center',
-    alignItems:'center',
-    borderRadius:1,
-  },
-  redcard:{
-    fontSize:12,
-    fontWeight:'bold',
-    color:'white',
-  },
-  
 };
 
 

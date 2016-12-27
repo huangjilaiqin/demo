@@ -24,7 +24,7 @@ import FinishMatchs from './FinishMatchs';
 
 import '../UserAgent';
 //import Socket from 'socket.io-client/socket.io';
-import SocketIO from 'socket.io-client';
+import SocketIO from 'socket.io-client/socket.io';
 //let io = require('socket.io-client');
 
 export default class MyViewPager extends Component {

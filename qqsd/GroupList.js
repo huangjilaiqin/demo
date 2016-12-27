@@ -34,7 +34,8 @@ import GroupItem from './GroupItem';
 export default class GroupList extends Component {
   constructor(props){
     super(props);
-    this.state={loading:true}
+    this.state={loading:true,haveMore:true};
+    this.datas=[];
     console.log('matchs constructor');
 
     this.itemPress=this.itemPress.bind(this);
@@ -71,16 +72,18 @@ export default class GroupList extends Component {
 
   async initDatas(){
     let mytime=new Date().getTime();
-    let bodyStr='cid=3&c_ck=&mytime='+mytime+'&t=2&stid=2&c_key=c28d797bdf3f789e759150cdac45957a';
-    let url='http://i.qqshidao.com/api/index.php?c_id=41000&c_type=2&c_cpid=2&suid=7fbef98cf1405f9424984422bbf8111d';
+    let bodyStr=this.props.bodyStr;
+    let url=this.props.url;
+    console.log('bodyStr:',bodyStr);
     let result=await fetch(url,{method:'POST','body':bodyStr,headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     },});
     let obj=await result.json();
+    console.log('group',obj);
     if(obj.code==100){
-      this.datas=obj.data.list;
-      console.log('initDates length:',this.datas.length);
-      this.cid=obj.cid;
+      this.datas=obj.data;
+    }else{
+      console.log(obj.msg);
     }
     this.setState({loading:false});
   }
@@ -119,22 +122,29 @@ export default class GroupList extends Component {
   }
 
   async pullUpDatas(){
-    await sleep(1000);
-    let base=this.state.foot*5;
-    for(let i=0;i<5;i++){
-      this.datas.push({
-        id:base+i,
-        name:'hj'+i+new Date(),
-      });
+    let mytime=new Date().getTime();
+    let bodyStr=this.props.bodyStr;
+    let url=this.props.url;
+    console.log('bodyStr:',bodyStr);
+    let result=await fetch(url,{method:'POST','body':bodyStr,headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },});
+    let obj=await result.json();
+    console.log('pullUpDatas',obj);
+    if(obj.code==100){
+      let ds=obj.data;
+
+      for(let i=0;i<ds.length;i++){
+        console.log(ds[i]['createtime'],ds[i]['lastreplytime'],ds[i]['updatetime']);
+        this.datas.push(ds[i]);
+      }
+      if(ds.length<10)
+        this.setState({haveMore:false});
+      else
+        this.setState({haveMore:true});
+    }else{
+      console.log(obj.msg);
     }
-    this.dsData=this.ds.cloneWithRows(this.datas);
-    console.log('before state:',this.state);
-    this.setState((pre)=>{this.state.foot=pre.foot++;});
-    console.log('after state:',this.state);
-    //todo 这个为什么错的
-    //this.setState((pre)=>this.state.foot=pre.foot++);
-    if(this.state.foot>3 && this.state.haveMore)
-      this.setState({haveMore:false});
   }
 
   onPressEvent(e){
@@ -177,8 +187,7 @@ export default class GroupList extends Component {
     */
   }
   renderFooter(){
-    console.log('renderFooter');
-    let size=this.dsData.getRowCount();
+    let size=this.datas.length;
     if(this.state.haveMore && size>0)
       return (
         <View style={{alignItems:'center',justifyContent:'center',height:36}}>
@@ -221,10 +230,10 @@ export default class GroupList extends Component {
                 refreshing={loading}
                 />
             }
-            //onEndReached={this.onEndReached}
-            //onEndReachedThreshold={80}
+            onEndReached={this.onEndReached}
+            onEndReachedThreshold={80}
             renderSeparator={this.renderSeparator}
-            //renderFooter={this.renderFooter}
+            renderFooter={this.renderFooter}
             //renderHeader={this.renderHeader}
           />
         </View>
