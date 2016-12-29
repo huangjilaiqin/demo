@@ -58,3 +58,11 @@ export function time2see(old){
 export function get1Pixel(){
   return 1/PixelRatio.get();
 }
+
+//将字典链接起来,k2v:key和value之间的连接符,v2v:各个键值间的连接符
+export function joinDict(dict,k2v='=',v2v='&'){
+  let rs=[];
+  for(let k in dict)
+    rs.push(`${k}${k2v}${dict[k]}`);
+  return rs.join(v2v);
+}

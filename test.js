@@ -1,12 +1,18 @@
 'use strict';
 
+//import {joinDict} from './Util';
+//
+function joinDict(dict,k2v='=',v2v='&'){
+  let rs=[];
+  for(let k in dict)
+    rs.push(`${k}${k2v}${dict[k]}`);
+  return rs.join(v2v);
+}
 
+let kk={
+  name:'hj',
+  age:25,
+  k:'',
+};
 
-let kk=['hj','lq'];
-let url='http://static.qiuqiusd.com/upload/pic/post/20161227/db24_405x592';
-
-let r=/(\d+)x(\d+)$/.exec(url);
-console.log(r);
-r=url.match(/(\d+)x(\d+)$/);
-console.log(r[1],r[2]);
-
+console.log(joinDict(kk));

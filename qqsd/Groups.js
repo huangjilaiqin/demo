@@ -51,12 +51,12 @@ export default class Groups extends Component {
       <ScrollableTabView
         scrollWithoutAnimation={true}
       >
-        <GroupList tabLabel='菠菜庄园' url={url} bodyStr='c_ck=&vtype=1&groupid=3&id=&threadtype=1&c_key=f11b1287365c925fe3ee76a048b367cc&pagesize=10&pageno=1'/>
-        <GroupList tabLabel='沙地绿茵' url={url} bodyStr='c_ck=&vtype=1&groupid=1&id=&threadtype=1&c_key=f11b1287365c925fe3ee76a048b367cc&pagesize=10&pageno=1'/>
-        <GroupList tabLabel='烽火蓝图' url={url} bodyStr='c_ck=&vtype=1&groupid=4&id=&threadtype=1&c_key=f11b1287365c925fe3ee76a048b367cc&pagesize=10&pageno=1'/>
-        <GroupList tabLabel='祸水红颜' url={url} bodyStr='c_ck=&vtype=1&groupid=2&id=&threadtype=1&c_key=f11b1287365c925fe3ee76a048b367cc&pagesize=10&pageno=1'/>
-        <GroupList tabLabel='球球讲堂' url={url} bodyStr='c_ck=&vtype=1&groupid=6&id=&threadtype=1&c_key=f11b1287365c925fe3ee76a048b367cc&pagesize=10&pageno=1'/>
-        <GroupList tabLabel='建议反馈' url={url} bodyStr='c_ck=&vtype=1&groupid=5&id=&threadtype=1&c_key=f11b1287365c925fe3ee76a048b367cc&pagesize=10&pageno=1'/>
+        <GroupList tabLabel='菠菜庄园' url={url} body={{groupid:3,threadtype:1,c_key:'f11b1287365c925fe3ee76a048b367cc',pagesize:10,pageno:1,c_ck:'',vtype:1,id:''}}/>
+        <GroupList tabLabel='沙地绿茵' url={url} body={{groupid:1,threadtype:1,c_key:'f11b1287365c925fe3ee76a048b367cc',pagesize:10,pageno:1,c_ck:'',vtype:1,id:''}}/>
+        <GroupList tabLabel='烽火蓝图' url={url} body={{groupid:4,threadtype:1,c_key:'f11b1287365c925fe3ee76a048b367cc',pagesize:10,pageno:1,c_ck:'',vtype:1,id:''}}/>
+        <GroupList tabLabel='祸水红颜' url={url} body={{groupid:2,threadtype:1,c_key:'f11b1287365c925fe3ee76a048b367cc',pagesize:10,pageno:1,c_ck:'',vtype:1,id:''}}/>
+        <GroupList tabLabel='球球讲堂' url={url} body={{groupid:6,threadtype:1,c_key:'f11b1287365c925fe3ee76a048b367cc',pagesize:10,pageno:1,c_ck:'',vtype:1,id:''}}/>
+        <GroupList tabLabel='建议反馈' url={url} body={{groupid:5,threadtype:1,c_key:'f11b1287365c925fe3ee76a048b367cc',pagesize:10,pageno:1,c_ck:'',vtype:1,id:''}}/>
       </ScrollableTabView>
     );
   }

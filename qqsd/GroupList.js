@@ -22,7 +22,7 @@ import {
   BackAndroid,
   InteractionManager,
 } from 'react-native';
-import {time2see,get1Pixel} from '../Util';
+import {time2see,get1Pixel,joinDict} from '../Util';
 
 import moment from 'moment';
 import SocketIO from 'react-native-socketio';
@@ -73,8 +73,9 @@ export default class GroupList extends Component {
 
   async initDatas(){
     let mytime=new Date().getTime();
-    let bodyStr=this.props.bodyStr;
+    let body=this.props.body;
     let url=this.props.url;
+    let bodyStr=joinDict(body);
     console.log('bodyStr:',bodyStr);
     let result=await fetch(url,{method:'POST','body':bodyStr,headers: {
       "Content-Type": "application/x-www-form-urlencoded"
@@ -124,8 +125,17 @@ export default class GroupList extends Component {
 
   async pullUpDatas(){
     let mytime=new Date().getTime();
-    let bodyStr=this.props.bodyStr;
+    let body=this.props.body;
     let url=this.props.url;
+    if(this.datas.length>0){
+      let oldestData=this.datas[this.datas.length-1];
+      console.log('oldestData',oldestData);
+      if(body.threadtype==1)
+        body.id=oldestData.lastreplytime;
+      else
+        body.id=oldestData.id;
+    }
+    let bodyStr=joinDict(body);
     console.log('bodyStr:',bodyStr);
     let result=await fetch(url,{method:'POST','body':bodyStr,headers: {
       "Content-Type": "application/x-www-form-urlencoded"
@@ -136,7 +146,6 @@ export default class GroupList extends Component {
       let ds=obj.data;
 
       for(let i=0;i<ds.length;i++){
-        console.log(ds[i]['createtime'],ds[i]['lastreplytime'],ds[i]['updatetime']);
         this.datas.push(ds[i]);
       }
       if(ds.length<10)

@@ -28,7 +28,7 @@ export default class demo extends Component {
     return (
       <Navigator
         style={{flex:1}}
-        initialRoute={{component: Groups}}
+        initialRoute={{component: Main}}
         configureScene={this.configureScene}
         renderScene={this.renderScene}/>
       /*
