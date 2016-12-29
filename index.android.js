@@ -15,6 +15,7 @@ import {
 
 import Main from './Main';
 import Groups from './qqsd/Groups';
+import TabView from './test/TabView';
 
 
 export default class demo extends Component {
@@ -28,7 +29,7 @@ export default class demo extends Component {
     return (
       <Navigator
         style={{flex:1}}
-        initialRoute={{component: Main}}
+        initialRoute={{component: TabView}}
         configureScene={this.configureScene}
         renderScene={this.renderScene}/>
       /*

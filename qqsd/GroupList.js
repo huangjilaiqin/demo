@@ -81,7 +81,6 @@ export default class GroupList extends Component {
       "Content-Type": "application/x-www-form-urlencoded"
     },});
     let obj=await result.json();
-    console.log('group',obj);
     if(obj.code==100){
       this.datas=obj.data;
     }else{
@@ -92,7 +91,6 @@ export default class GroupList extends Component {
   
   handleBack(){
     let navigator = this.props.navigator;
-    console.log('GroupList handleBack:',this);
     if (navigator && navigator.getCurrentRoutes().length > 1) {
       navigator.pop();
       return true;
@@ -129,7 +127,6 @@ export default class GroupList extends Component {
     let url=this.props.url;
     if(this.datas.length>0){
       let oldestData=this.datas[this.datas.length-1];
-      console.log('oldestData',oldestData);
       if(body.threadtype==1)
         body.id=oldestData.lastreplytime;
       else
@@ -141,7 +138,6 @@ export default class GroupList extends Component {
       "Content-Type": "application/x-www-form-urlencoded"
     },});
     let obj=await result.json();
-    console.log('pullUpDatas',obj);
     if(obj.code==100){
       let ds=obj.data;
 
