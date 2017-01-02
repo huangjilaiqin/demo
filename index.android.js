@@ -16,6 +16,7 @@ import {
 import Main from './Main';
 import Groups from './qqsd/Groups';
 import TabView from './test/TabView';
+import SetNativeProps from './test/SetNativeProps';
 
 
 export default class demo extends Component {
